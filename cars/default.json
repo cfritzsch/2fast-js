@@ -1,0 +1,23 @@
+{
+    "name": "default",
+
+    "masse": 1500,
+    "length": 4.3,
+    "width": 2.1,
+    "radstand": 2.8,
+
+    "luftwiderstand": 1.0,
+    "bremswiderstand": 1.0,
+    "motorkraft": 1.0,
+
+    "drehmomenttabelle": [
+        { "upm": 0,    "drehmoment": 0   },
+        { "upm": 1000, "drehmoment": 390 },
+        { "upm": 2000, "drehmoment": 440 },
+        { "upm": 3000, "drehmoment": 455 },
+        { "upm": 4000, "drehmoment": 470 },
+        { "upm": 5000, "drehmoment": 465 },
+        { "upm": 6000, "drehmoment": 380 },
+        { "upm": 9000, "drehmoment": 0   }
+    ]
+}
