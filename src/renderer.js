@@ -20,11 +20,13 @@ export function draw(ctx, canvas, player, map, now) {
   drawMap(ctx, map);
    
   drawStartPositions(ctx, map);
+
+  drawCheckpointsBottom(ctx, map.checkpoints);
   
   drawGhost(ctx, player, now);
   drawCar(ctx, canvas, player.car, map, zoom);
 
-  drawCheckpoints(ctx, canvas, map.checkpoints, player.car);
+  drawCheckpoints(ctx, map.checkpoints, player.car);
 
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   
@@ -110,8 +112,7 @@ export function drawStartPositions(ctx, map) {
 
 
 
-export function drawCheckpoints(ctx, canvas, checkpoints, car) {
-  drawCheckeredLine(ctx, checkpoints[0])
+export function drawCheckpoints(ctx, checkpoints, car) {
   checkpoints.forEach(cp => {
     ctx.strokeStyle = "black";
     ctx.lineWidth = 0.5;
@@ -132,7 +133,13 @@ export function drawCheckpoints(ctx, canvas, checkpoints, car) {
     ctx.moveTo(cp.x2 - (car.position.x - cp.x2) * 0.1, cp.y2 - (car.position.y - cp.y2) * 0.1);
     ctx.lineTo(cp.x2, cp.y2);
     ctx.stroke();
+    ctx.lineCap = "butt";
+  })
+}
 
+export function drawCheckpointsBottom(ctx, checkpoints) {
+  drawCheckeredLine(ctx, checkpoints[0])
+  checkpoints.forEach(cp => {
     // ctx.strokeStyle = "black";
     // ctx.lineWidth = 0.1;
     // ctx.setLineDash([0.5, 1]);
@@ -141,19 +148,6 @@ export function drawCheckpoints(ctx, canvas, checkpoints, car) {
     // ctx.lineTo(cp.x2, cp.y2);
     // ctx.stroke();
     // ctx.setLineDash([]);
-    ctx.lineCap = "butt";
-  })
-}
-
-export function drawCheckpointsBottom(ctx, canvas, checkpoints, car) {
-  drawCheckeredLine(ctx, checkpoints[0])
-  checkpoints.forEach(cp => {
-    ctx.strokeStyle = "black";
-    ctx.lineWidth = 0.2;
-    ctx.beginPath();
-    ctx.moveTo(cp.x1, cp.y1);
-    ctx.lineTo(cp.x2, cp.y2);
-    ctx.stroke();
   })
 }
 
