@@ -50,7 +50,7 @@ async function init() {
   player.car.bewegungswinkel = start.angle;
   player.startZeit = performance.now();
   setupKeyboardInput(player);
-  setupGyroInput(player);
+  // setupGyroInput(player);
   setupTouchInput(player);
 
   requestAnimationFrame(loop);
