@@ -5,19 +5,531 @@
   <title>²fast - by massiv_ballern</title>
 </head>
 <style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f3efe4;
+    --bg-accent: #d8d0be;
+    --panel: #efe6d2;
+    --panel-strong: #e2d6bd;
+    --text: #1e1a16;
+    --muted: #5c5246;
+    --accent: #d4582a;
+    --accent-strong: #f2b542;
+    --accent-border: #8b3414;
+    --shadow: rgba(24, 18, 12, 0.25);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1012;
+      --bg-accent: #1c1f24;
+      --panel: #16181c;
+      --panel-strong: #22262c;
+      --text: #f4f1e7;
+      --muted: #b3a898;
+      --accent: #ff7a2f;
+      --accent-strong: #ffd54f;
+      --accent-border: #c94610;
+      --shadow: rgba(0, 0, 0, 0.45);
+    }
+  }
+
   html, body {
     margin: 0;
     padding: 0;
-    overflow: hidden;   /* keine Scrollbars mehr */
-    background: black;
+    overflow: hidden;
+    background: radial-gradient(circle at top, var(--bg-accent), var(--bg));
+    color: var(--text);
+    font-family: "Fixedsys", "Courier New", "Cascadia Mono", "Consolas", "Lucida Console", monospace;
+  }
+
+  button,
+  input,
+  label,
+  select,
+  textarea {
+    font-family: "Fixedsys", "Courier New", "Cascadia Mono", "Consolas", "Lucida Console", monospace;
   }
 
   canvas {
     display: block;
+    position: fixed;
+    inset: 0;
+  }
+
+  .menu {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    background:
+      linear-gradient(120deg, rgba(0, 0, 0, 0.15), transparent 40%),
+      linear-gradient(0deg, rgba(0, 0, 0, 0.2), transparent 35%),
+      radial-gradient(circle at 20% 20%, rgba(255, 160, 80, 0.08), transparent 40%);
+    z-index: 10;
+    font-family: "Fixedsys", "Courier New", "Cascadia Mono", "Consolas", "Lucida Console", monospace;
+  }
+
+  .menu.is-hidden {
+    display: none;
+  }
+
+  .menu-shell {
+    width: min(960px, 100%);
+    background: var(--panel);
+    border: 2px solid var(--accent-border);
+    box-shadow: 0 20px 60px var(--shadow);
+    padding: 24px 28px 28px;
+  }
+
+  .menu-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    border-bottom: 2px solid var(--accent-border);
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+  }
+
+  .logo {
+    position: relative;
+    font-size: clamp(36px, 5vw, 60px);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .logo span {
+    display: block;
+  }
+
+  .logo .logo-glow {
+    color: #ffe46c;
+    text-shadow:
+      4px 0 0 #ffb545,
+      8px 0 0 #ff9830,
+      12px 0 0 #f07d25,
+      16px 0 0 #e06020,
+      20px 0 0 #c94b1a,
+      24px 0 0 #a23a14,
+      0 0 0 rgba(0, 0, 0, 0);
+  }
+
+  .logo .logo-shadow {
+    display: none;
+  }
+
+  .menu-subtitle {
+    font-size: 14px;
+    color: var(--muted);
+    letter-spacing: 3px;
+  }
+
+  .menu-panels {
+    min-height: 420px;
+  }
+
+  .menu-panel {
+    display: none;
+    gap: 20px;
+  }
+
+  .menu-panel.is-active {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel-title {
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--accent);
+  }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+  }
+
+  .menu-button {
+    background: var(--panel-strong);
+    color: var(--text);
+    border: 2px solid var(--accent-border);
+    padding: 14px 18px;
+    font-size: 16px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+
+  .menu-button:hover {
+    background: var(--accent-strong);
+    transform: translateY(-2px);
+  }
+
+  .menu-button.is-primary {
+    background: var(--accent);
+    color: #1b120c;
+  }
+
+  .menu-button.is-primary:hover {
+    background: var(--accent-strong);
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+  }
+
+  .track-card,
+  .car-card {
+    background: var(--panel-strong);
+    border: 2px solid transparent;
+    padding: 12px;
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    transition: border 0.15s ease, transform 0.15s ease;
+  }
+
+  .track-card.is-selected,
+  .car-card.is-selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.15);
+  }
+
+  .track-preview {
+    background: #0b0b0b;
+    border: 1px solid var(--accent-border);
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  .track-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    image-rendering: pixelated;
+  }
+
+  .track-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .track-name {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .track-time {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .car-title {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .car-chip {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .car-chip span {
+    display: block;
+    height: 14px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+  }
+
+  .color-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .color-group {
+    display: grid;
+    gap: 8px;
+  }
+
+  .color-preview {
+    height: 28px;
+    border: 2px solid var(--accent-border);
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .options-group {
+    display: grid;
+    gap: 8px;
+    background: var(--panel-strong);
+    padding: 12px;
+    border: 1px solid var(--accent-border);
+  }
+
+  .options-group label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+  }
+
+  .options-group input[type="text"] {
+    padding: 8px 10px;
+    border: 1px solid var(--accent-border);
+    background: transparent;
+    color: var(--text);
+  }
+
+  .options-group input[type="range"] {
+    width: 100%;
+  }
+
+  .zoom-labels {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  .zoom-labels span {
+    text-align: center;
+  }
+
+  .menu-hint {
+    background: var(--panel-strong);
+    border: 1px dashed var(--accent-border);
+    padding: 18px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--muted);
+  }
+
+  .menu-footer {
+    margin-top: 18px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .pause-button {
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    z-index: 9;
+    background: var(--panel-strong);
+    color: var(--text);
+    border: 2px solid var(--accent-border);
+    padding: 8px 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    display: none;
+  }
+
+  .pause-button.is-visible {
+    display: block;
+  }
+
+  .pause-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 11;
+  }
+
+  .pause-overlay.is-visible {
+    display: flex;
+  }
+
+  .pause-panel {
+    background: var(--panel);
+    border: 2px solid var(--accent-border);
+    box-shadow: 0 20px 60px var(--shadow);
+    padding: 24px;
+    width: min(420px, 90vw);
+    display: grid;
+    gap: 14px;
+    text-align: center;
+    font-family: "Fixedsys", "Courier New", "Cascadia Mono", "Consolas", "Lucida Console", monospace;
+  }
+
+  .pause-panel h2 {
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--accent-strong);
   }
 </style>
 <body>
   <canvas id="game"></canvas>
+  <button id="pause-button" class="pause-button" type="button">Pause</button>
+  <div id="pause-overlay" class="pause-overlay">
+    <div class="pause-panel">
+      <h2>Paused</h2>
+      <div class="options-grid">
+        <div class="options-group">
+          <label for="pause-ghost">Show Ghost</label>
+          <input id="pause-ghost" type="checkbox" />
+        </div>
+        <div class="options-group">
+          <label for="pause-hud-rpm">Show RPM Gauge</label>
+          <input id="pause-hud-rpm" type="checkbox" />
+        </div>
+        <div class="options-group">
+          <label for="pause-hud-speed">Show Speed</label>
+          <input id="pause-hud-speed" type="checkbox" />
+        </div>
+        <div class="options-group">
+          <label for="pause-hud-minimap">Show Minimap</label>
+          <input id="pause-hud-minimap" type="checkbox" />
+        </div>
+        <div class="options-group">
+          <label for="pause-zoom">Camera Zoom</label>
+          <input id="pause-zoom" type="range" min="0" max="3" step="1" />
+          <div class="zoom-labels">
+            <span>Close</span>
+            <span>Middle</span>
+            <span>Far</span>
+            <span>Farther</span>
+          </div>
+        </div>
+      </div>
+      <button id="pause-resume" class="menu-button is-primary" type="button">Resume</button>
+      <button id="pause-restart" class="menu-button" type="button">Restart Lap</button>
+      <button id="pause-menu" class="menu-button" type="button">Return To Menu</button>
+    </div>
+  </div>
+  <div id="menu" class="menu">
+    <div class="menu-shell">
+      <div class="menu-header">
+        <div class="logo">
+          <span class="logo-shadow">Too Fast</span>
+          <span class="logo-glow">Too Fast</span>
+        </div>
+        <div class="menu-subtitle">by massiv_ballern</div>
+      </div>
+      <div class="menu-panels">
+        <div class="menu-panel is-active" data-panel="main">
+          <div class="panel-title">Main Menu</div>
+          <div class="menu-grid">
+            <button id="menu-start" class="menu-button is-primary" type="button">Start Race</button>
+            <button class="menu-button" type="button" data-target="tracks">Select Track</button>
+            <button class="menu-button" type="button" data-target="cars">Select Car</button>
+            <button class="menu-button" type="button" data-target="multiplayer">Multi Player</button>
+            <button class="menu-button" type="button" data-target="options">Options</button>
+          </div>
+        </div>
+        <div class="menu-panel" data-panel="tracks">
+          <div class="panel-title">Select Track</div>
+          <div id="track-list" class="card-grid"></div>
+          <div class="menu-footer">
+            <button class="menu-button" type="button" data-back="main">Back</button>
+          </div>
+        </div>
+        <div class="menu-panel" data-panel="cars">
+          <div class="panel-title">Select Car</div>
+          <div id="car-list" class="card-grid"></div>
+          <div class="color-row">
+            <div class="color-group">
+              <label for="car-color">Body Color</label>
+              <input id="car-color" type="color" />
+              <div id="car-swatch" class="color-preview"></div>
+            </div>
+            <div class="color-group">
+              <label for="roof-color">Roof Color</label>
+              <input id="roof-color" type="color" />
+              <div id="roof-swatch" class="color-preview"></div>
+            </div>
+          </div>
+          <div class="menu-footer">
+            <button class="menu-button" type="button" data-back="main">Back</button>
+          </div>
+        </div>
+        <div class="menu-panel" data-panel="multiplayer">
+          <div class="panel-title">Multi Player</div>
+          <div class="menu-hint">Coming soon</div>
+          <div class="menu-footer">
+            <button class="menu-button" type="button" data-back="main">Back</button>
+          </div>
+        </div>
+        <div class="menu-panel" data-panel="options">
+          <div class="panel-title">Options</div>
+          <div class="options-grid">
+            <div class="options-group">
+              <label for="player-name">Player Name</label>
+              <input id="player-name" type="text" maxlength="20" />
+            </div>
+            <div class="options-group">
+              <label for="gyro-enabled">Gyro Steering</label>
+              <input id="gyro-enabled" type="checkbox" />
+            </div>
+            <div class="options-group">
+              <label for="gyro-sensitivity">Gyro Sensitivity <span id="gyro-value"></span></label>
+              <input id="gyro-sensitivity" type="range" min="0.5" max="2.5" step="0.05" />
+            </div>
+            <div class="options-group">
+              <label for="options-ghost">Ghost</label>
+              <input id="options-ghost" type="checkbox" />
+            </div>
+            <div class="options-group">
+              <label for="options-hud-rpm">HUD RPM</label>
+              <input id="options-hud-rpm" type="checkbox" />
+            </div>
+            <div class="options-group">
+              <label for="options-hud-speed">HUD Speed</label>
+              <input id="options-hud-speed" type="checkbox" />
+            </div>
+            <div class="options-group">
+              <label for="options-hud-minimap">HUD Minimap</label>
+              <input id="options-hud-minimap" type="checkbox" />
+            </div>
+            <div class="options-group">
+              <label for="options-zoom">Camera Zoom</label>
+              <input id="options-zoom" type="range" min="0" max="3" step="1" />
+              <div class="zoom-labels">
+                <span>Close</span>
+                <span>Middle</span>
+                <span>Far</span>
+                <span>Farther</span>
+              </div>
+            </div>
+          </div>
+          <div class="menu-footer">
+            <button class="menu-button" type="button" data-back="main">Back</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <script type="module" src="./src/main.js"></script>
 </body>
 </html>

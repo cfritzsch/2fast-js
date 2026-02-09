@@ -69,11 +69,22 @@ export function setupTouchInput(player) {
 }
 
 
-export function setupGyroInput(player) {
+let gyroSensitivity = 1;
+let gyroEnabled = false;
+let gyroListenerInstalled = false;
+
+export function setupGyroInput(player, options = {}) {
+  gyroSensitivity = typeof options.sensitivity === "number" ? options.sensitivity : 1;
+  gyroEnabled = options.enabled !== false;
+
+  if (gyroListenerInstalled) return;
+  gyroListenerInstalled = true;
+
   if (DeviceOrientationEvent.requestPermission) {
     DeviceOrientationEvent.requestPermission();  // iOS needs to request permissions
   }
   window.addEventListener("deviceorientation", e => {
+    if (!gyroEnabled) return;
     if (e.gamma == null) return;
 
     // gamma: -90 .. +90 (links/rechts neigen)
@@ -81,7 +92,7 @@ export function setupGyroInput(player) {
 
     let steer = 0;
     if (Math.abs(e.gamma) > deadZone) {
-      steer = e.gamma / 30;      // Empfindlichkeit
+      steer = (e.gamma / 30) * gyroSensitivity;      // Empfindlichkeit
       steer = Math.max(-1, Math.min(1, steer));
     }
 

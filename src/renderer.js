@@ -2,7 +2,7 @@
 
 let pixelPerfect = true; // kann später für Optionen genutzt werden
 
-export function draw(ctx, canvas, player, map, now) {
+export function draw(ctx, canvas, player, map, now, options = {}) {
   prepareContext(ctx);
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -13,7 +13,8 @@ export function draw(ctx, canvas, player, map, now) {
   let zoom = Math.max(minZoom, maxZoom - Math.abs(player.car.geschwindigkeit) / 15);
 
   // Zoom abhängig von Bildschirmgröße
-  zoom *= canvas.width/1000;
+  const zoomFactor = typeof options.zoomFactor === "number" ? options.zoomFactor : 1;
+  zoom *= (canvas.width / 1000) * zoomFactor;
   
   applyCamera(ctx, canvas, player.car, zoom);
 
@@ -23,14 +24,17 @@ export function draw(ctx, canvas, player, map, now) {
 
   drawCheckpointsBottom(ctx, map.checkpoints);
   
-  drawGhost(ctx, player, now);
+  const showGhost = options.showGhost !== false;
+  if (showGhost) {
+    drawGhost(ctx, player, now);
+  }
   drawCar(ctx, canvas, player.car, map, zoom);
 
   drawCheckpoints(ctx, map.checkpoints, player.car);
 
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   
-  drawHUD(ctx, canvas, player, map, now);
+  drawHUD(ctx, canvas, player, map, now, options);
 }
 
 
@@ -231,15 +235,21 @@ export function drawCheckpoint(ctx, cp, car) {
 
 // HUD
 
-function drawHUD(ctx, canvas, player, map, now) {
+function drawHUD(ctx, canvas, player, map, now, options = {}) {
   ctx.save();
   ctx.resetTransform(); // Um in Bildschirmkoordinaten zu zeichnen
 
   drawCheckpointArrow(ctx, canvas, player.car, map.checkpoints[player.akCheckpoint]);
-  drawRpmGauge(ctx, canvas, player.car);
-  drawSpeedGear(ctx, canvas, player.car);
+  if (options.hudShowRpm !== false) {
+    drawRpmGauge(ctx, canvas, player.car);
+  }
+  if (options.hudShowSpeed !== false) {
+    drawSpeedGear(ctx, canvas, player.car);
+  }
   drawTimes(ctx, canvas, player, now);
-  drawMinimap(ctx, canvas, map, player.car);
+  if (options.hudShowMinimap !== false) {
+    drawMinimap(ctx, canvas, map, player.car);
+  }
 
   ctx.restore();
 }
