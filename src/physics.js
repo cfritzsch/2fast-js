@@ -334,7 +334,7 @@ function getResetTarget(player, map) {
 
   let prevCheckpoint = player.akCheckpoint-1;
   if (prevCheckpoint == -1) {
-    prevCheckpoint = map.checkpoints.length;
+    prevCheckpoint = map.checkpoints.length-1;
   }
   const cp = map.checkpoints[prevCheckpoint];
 
