@@ -4,7 +4,6 @@ function gearMulti(car) {
   const ratios = car.autotyp?.gearRatios;
   if (ratios) {
     const key = String(car.gang);
-    console.log(ratios[key])
     if (key in ratios) return ratios[key];
   }
   console.log('No gear table found, using default')
