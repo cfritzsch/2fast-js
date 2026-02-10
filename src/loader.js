@@ -86,6 +86,7 @@ export async function loadMap(basePath) { // path to json
     height: img.height,
     materialIndex,
     tiles,
+    name: meta.name,
     metersPerPixel: meta.metersPerPixel,
     startPositions: meta.startPositions,
     startPositionSP: meta.startPositionSP,
@@ -172,7 +173,18 @@ export async function loadCarType(path) {
   const torqueTable = [...data.drehmomenttabelle]
     .sort((a, b) => a.upm - b.upm);
 
+  const defaultGearRatios = {
+    "-1": 3.5,
+    "1": 2.66,
+    "2": 1.78,
+    "3": 1.3,
+    "4": 1.0,
+    "5": 0.84,
+    "6": 0.5
+  };
+
   return {
+    name: data.name,
     masse: data.masse,
     length: data.length,
     width: data.width,
@@ -181,6 +193,7 @@ export async function loadCarType(path) {
     luftwiderstand: data.luftwiderstand,
     bremswiderstand: data.bremswiderstand,
     motorkraft: data.motorkraft,
+    gearRatios: data.gearRatios ?? defaultGearRatios,
 
     drehmomenttabelle: torqueTable
   };

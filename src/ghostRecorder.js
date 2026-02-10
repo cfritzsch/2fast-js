@@ -14,11 +14,12 @@ export function recordGhostFrame(player, now) {
   }
 }
 
-export function saveBestGhost(bestZeit, ghost, map) {
+export function saveBestGhost(bestZeit, ghost, map, carName) {
   const KEY = map.name + "_bestghost_v1";
   localStorage.setItem(KEY, JSON.stringify({
     bestZeit,
-    ghost
+    ghost,
+    carName
   }));
 }
 

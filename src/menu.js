@@ -67,6 +67,7 @@ export async function initMenu({ onStart }) {
 
   function showMenu() {
     menuRoot.classList.remove("is-hidden");
+    void populateTracks(trackList, settings);
   }
 
   navButtons.forEach(btn => {
@@ -189,7 +190,7 @@ async function populateTracks(container, settings) {
       </div>
       <div class="track-info">
         <div class="track-name">${escapeHtml(track.name)}</div>
-        <div class="track-time">${formatTime(getBestTime(track.name))}</div>
+        ${formatBestTime(track.name)}
       </div>
     `;
     if (settings.track === track.path) card.classList.add("is-selected");
@@ -246,12 +247,15 @@ async function loadManifest(path, fallback) {
   return fallback;
 }
 
-function getBestTime(trackName) {
+function getBestResult(trackName) {
   const raw = localStorage.getItem(`${trackName}_bestghost_v1`);
   if (!raw) return 0;
   try {
     const data = JSON.parse(raw);
-    return data.bestZeit || 0;
+    return {
+      bestZeit: data.bestZeit || 0,
+      carName: data.carName || ""
+    };
   } catch {
     return 0;
   }
@@ -264,6 +268,15 @@ function formatTime(ms) {
   const seconds = Math.floor((total % 60000) / 1000);
   const millis = total % 1000;
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}:${String(millis).padStart(3, "0")}`;
+}
+
+function formatBestTime(trackName) {
+  const result = getBestResult(trackName);
+  if (!result || !result.bestZeit) {
+    return `<div class="track-time">${formatTime(0)}</div>`;
+  }
+  const carLabel = result.carName ? ` • ${escapeHtml(result.carName)}` : "";
+  return `<div class="track-time">${formatTime(result.bestZeit)}${carLabel}</div>`;
 }
 
 function escapeHtml(value) {

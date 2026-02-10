@@ -1,14 +1,14 @@
 {
-    "name": "default",
+    "name": "supercar",
 
-    "masse": 1500,
-    "length": 4.3,
-    "width": 2.1,
-    "radstand": 2.8,
+    "masse": 1300,
+    "length": 4.8,
+    "width": 2.2,
+    "radstand": 3.2,
 
-    "luftwiderstand": 0.9,
-    "bremswiderstand": 1.0,
-    "motorkraft": 1.2,
+    "luftwiderstand": 0.4,
+    "bremswiderstand": 1.2,
+    "motorkraft": 1.5,
     "gearRatios": {
         "-1": 3.5,
         "1": 2.66,

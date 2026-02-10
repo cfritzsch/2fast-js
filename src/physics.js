@@ -1,16 +1,14 @@
 import { saveBestGhost } from "./ghostRecorder.js";
 
-function gearMulti(gear) {
-  switch (gear) {
-    case -1: return 3.5;  // Rückwärtsgang
-    case 1: return 2.66;
-    case 2: return 1.78;
-    case 3: return 1.3;
-    case 4: return 1.0;
-    case 5: return 0.84;
-    case 6: return 0.5;
-    default: return 2.66;
+function gearMulti(car) {
+  const ratios = car.autotyp?.gearRatios;
+  if (ratios) {
+    const key = String(car.gang);
+    console.log(ratios[key])
+    if (key in ratios) return ratios[key];
   }
+  console.log('No gear table found, using default')
+  return 2.66;
 }
 
 export function speedToUpm(car) {
@@ -20,7 +18,7 @@ export function speedToUpm(car) {
     Math.floor(
       speed /
       Radradius *
-      gearMulti(car.gang) *
+      gearMulti(car) *
       Differential *
       30 /
       Math.PI
@@ -117,7 +115,7 @@ export function updatePhysics(player, map, dt) {
   const Fmotor =
     drehmoment *
     car.gasstatus *
-    gearMulti(car.gear) *
+    gearMulti(car) *
     Differential *
     Effizienz /
     Radradius *
@@ -294,7 +292,7 @@ function handleCheckpointHit(player, map, crossingTime) {
       if (lapTime < player.bestZeit || player.bestZeit === 0) {
         player.bestZeit = lapTime;
         player.bestGhost = [...player.currentGhost];
-        saveBestGhost(player.bestZeit, player.bestGhost, map);
+        saveBestGhost(player.bestZeit, player.bestGhost, map, player.car.autotyp.name);
       }
     }
     player.currentGhost = [];
